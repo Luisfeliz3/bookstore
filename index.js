@@ -55,12 +55,10 @@ app.get("/books", async (request, response) => {
   }
 });
 
-
 //Get book by id
 app.get("/books/:id", async (request, response) => {
   try {
-
-      const {id} = request.params;
+    const { id } = request.params;
 
     const book = await Book.findById(id);
 
@@ -71,32 +69,43 @@ app.get("/books/:id", async (request, response) => {
   }
 });
 
-app.put('/books/:id', async (request,response) => {
-
-try {
-  
-  if (
-    !request.body.title ||
-    !request.body.author ||
-    !request.body.publishYear
-  ) {
-    return response.status(400).send({
-      message: "Send all Required fields: title, author, publishYear",
-    });
-  }
-      const { id } = request.params;
-      const result = await Book.findByIdAndUpdate(id, request.body)
-    if (!result){
-      return response.status(404).json({message : 'Book not found'})
+app.put("/books/:id", async (request, response) => {
+  try {
+    if (
+      !request.body.title ||
+      !request.body.author ||
+      !request.body.publishYear
+    ) {
+      return response.status(400).send({
+        message: "Send all Required fields: title, author, publishYear",
+      });
     }
-    return response.status(200).send({message : 'Book Updated Succesfully'})
-
-
-} catch (error) {
+    const { id } = request.params;
+    const result = await Book.findByIdAndUpdate(id, request.body);
+    if (!result) {
+      return response.status(404).json({ message: "Book not found" });
+    }
+    return response.status(200).send({ message: "Book Updated Succesfully" });
+  } catch (error) {
     console.log(error.message);
     response.status(500).send({ message: error.message });
   }
-})
+});
+
+app.delete('/books/:id', async (request, response) => {
+    try {
+        const {id }= request.params;
+        const result = await Book.findByIdAndDelete(id);
+        if(!result){
+          return response.status(404).json({message: "Book Not Found!"})
+        }
+        return response.status(200).send({message: "Book has been Deleted!"})
+
+    } catch (error) {
+      console.log(error.message);
+      response.status(500).send({message: error.message});
+    }
+});
 
 mongoose
   .connect(mongoDBURL)
